@@ -14,10 +14,28 @@ class AppStarted extends WeatherEvent {
 }
 
 class FetchWeather extends WeatherEvent {
-  final CityLocation cityLocation;
+  final Cities cityLocation;
 
   const FetchWeather(this.cityLocation);
 
   @override
   List<Object> get props => [cityLocation];
 }
+
+class CityClicked extends WeatherEvent {
+  final Cities city;
+  const CityClicked({required this.city});
+
+  @override
+  List<Object> get props => [city];
+}
+
+// class TimeStart extends WeatherEvent {
+//   final DateTime time;
+//   final int timeOffset;
+
+//   const TimeStart({required this.time, required this.timeOffset});
+
+//   @override
+//   List<Object> get props => [time, timeOffset];
+// }

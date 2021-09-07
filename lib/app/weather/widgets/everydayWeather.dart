@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../data/models/weather.dart';
 import 'weatherElem.dart';
 
 class EverydayWeather extends StatelessWidget {
-  const EverydayWeather({Key? key}) : super(key: key);
+  final DailyWeather dailyWeather;
+
+  EverydayWeather({required this.dailyWeather});
 
   @override
   Widget build(BuildContext context) {
@@ -27,21 +30,20 @@ class EverydayWeather extends StatelessWidget {
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.all(5.0),
-              child: Icon(
-                Icons.wb_cloudy,
-                size: 40,
-                color: Colors.grey,
+              child: Image.asset(
+                dailyWeather.condition.icon,
+                width: 40,
               ),
             ),
             Text(
-              'Mon,21',
+              '${dailyWeather.getDayName()},${dailyWeather.getDate()}',
               style: Theme.of(context).textTheme.headline1,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '35\u00B0C',
+                  '${dailyWeather.tempH} \u00B0C',
                   style: Theme.of(context)
                       .textTheme
                       .headline1
@@ -54,7 +56,7 @@ class EverydayWeather extends StatelessWidget {
                 ),
                 SizedBox(width: 2.0),
                 Text(
-                  '26\u00B0C',
+                  '${dailyWeather.tempL}\u00B0C',
                   style: Theme.of(context)
                       .textTheme
                       .headline1

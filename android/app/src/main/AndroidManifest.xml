@@ -3,6 +3,7 @@
    <application
         android:label="weather_app_bloc"
         android:icon="@mipmap/ic_launcher">
+        
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
@@ -37,5 +38,7 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <meta-data android:name="com.google.android.geo.AIzaSyB7MZ8ogbb99bm1JyYYF2z2Xn7H5UJmwKM"
+            android:value="AIzaSyB7MZ8ogbb99bm1JyYYF2z2Xn7H5UJmwKM"/>
     </application>
 </manifest>

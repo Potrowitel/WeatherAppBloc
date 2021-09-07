@@ -8,6 +8,14 @@ class CitiesInitial extends CitiesState {}
 
 class CitiesLoading extends CitiesState {}
 
-class CitiesLoaded extends CitiesState {}
+class CitiesLoaded extends CitiesState {
+  final List<Cities> cities;
 
-class CitiesError extends CitiesState {}
+  CitiesLoaded({required this.cities});
+}
+
+class CitiesError extends CitiesState {
+  final Object errorCode;
+
+  CitiesError(this.errorCode);
+}
