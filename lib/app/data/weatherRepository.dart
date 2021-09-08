@@ -9,7 +9,7 @@ class WeatherRepository {
   static String apiKey = '6dc9b1311d72eed48c72de34bba59772';
 
   Future<Weather> fetchWeatherByLocation(
-      String latitude, String longitud) async {
+      double latitude, double longitud) async {
     final url = Uri.parse(
         'https://api.openweathermap.org/data/2.5/onecall?lat=$latitude&lon=$longitud&units=metric&exclude=minutely,hourly,alerts&appid=$apiKey');
 
@@ -30,19 +30,33 @@ class WeatherRepository {
         .map<DailyWeather>((dailyJson) => DailyWeather.fromJson(dailyJson))
         .toList();
 
+    DateTime date = DateTime.now().toUtc();
+    int dateOffset = weatherJson['timezone_offset'];
+
+    DateTime sunRise = DateTime.fromMillisecondsSinceEpoch(
+        weatherJson['current']['sunrise'] * 1000,
+        isUtc: true);
+    sunRise = sunRise.add(Duration(seconds: dateOffset));
+    DateTime sunSet = DateTime.fromMillisecondsSinceEpoch(
+        weatherJson['current']['sunset'] * 1000,
+        isUtc: true);
+    sunSet = sunSet.add(Duration(seconds: dateOffset));
+    DateTime currentTime = date.add(Duration(seconds: dateOffset));
+
+    print(DateTime.fromMillisecondsSinceEpoch(
+        weatherJson['current']['sunrise'] * 1000));
+
     final Weather weather = Weather(
       cityName: weatherJson['timezone'] as String,
       temp: weatherJson['current']['temp'].round(),
       condition: weatherJson['current']['weather'][0]['main'] as String,
-      tempHigh: 43.3 as double,
-      tempLow: 23.3 as double,
       humidity: weatherJson['current']['humidity'] as int,
       pressure: weatherJson['current']['pressure'] as int,
-      sunRise: weatherJson['current']['sunrise'] as int,
-      sunSet: weatherJson['current']['sunset'] as int,
+      sunRise: sunRise,
+      sunSet: sunSet,
       windSpeed: windSpeed as double,
       windDeg: weatherJson['current']['wind_deg'] as int,
-      currentTime: weatherJson['current']['dt'] as int,
+      currentTime: currentTime,
       offset: weatherJson['timezone_offset'] as int,
       dailyWeather: dailyWeather,
     );

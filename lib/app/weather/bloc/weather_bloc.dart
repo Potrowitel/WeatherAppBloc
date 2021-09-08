@@ -13,8 +13,7 @@ part 'weather_state.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   final WeatherRepository _weatherRepository;
-  Cities city =
-      Cities(country: 'KG', city: 'Bishkek', lat: '42.87', lng: '74.59');
+  Cities city = Cities(country: 'KG', city: 'Bishkek', lat: 42.87, lng: 74.59);
   WeatherBloc({required WeatherRepository weatherRepository})
       : _weatherRepository = weatherRepository,
         super(WeatherLoading());

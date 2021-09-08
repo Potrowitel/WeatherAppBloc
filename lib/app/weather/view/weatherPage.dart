@@ -22,7 +22,7 @@ class _WeatherPageState extends State<WeatherPage> {
   void initState() {
     super.initState();
     BlocProvider.of<WeatherBloc>(context).add(FetchWeather(
-        Cities(country: 'KG', city: 'Bishkek', lat: '42.87', lng: '74.59')));
+        Cities(country: 'KG', city: 'Bishkek', lat: 42.87, lng: 74.59)));
   }
 
   @override

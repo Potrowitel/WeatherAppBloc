@@ -1,19 +1,16 @@
-import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 
 class Weather {
   final String cityName;
   final int temp;
   final String condition;
-  final double tempHigh;
-  final double tempLow;
   final int humidity;
   final int pressure;
   final double windSpeed;
   final int windDeg;
-  final int sunRise;
-  final int sunSet;
-  final int currentTime;
+  final DateTime sunRise;
+  final DateTime sunSet;
+  final DateTime currentTime;
   final int offset;
   final List<DailyWeather> dailyWeather;
 
@@ -21,8 +18,6 @@ class Weather {
     required this.cityName,
     required this.temp,
     required this.condition,
-    required this.tempHigh,
-    required this.tempLow,
     required this.humidity,
     required this.pressure,
     required this.windSpeed,
@@ -39,21 +34,19 @@ class Weather {
   }
 
   String getSunrise() {
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch(this.sunRise * 1000 - this.offset);
-    return time.hour.toString() + ':' + time.minute.toString();
+    return this.sunRise.hour.toString() + ':' + this.sunRise.minute.toString();
   }
 
   String getSunset() {
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch(this.sunSet * 1000 - this.offset);
-    return time.hour.toString() + ':' + time.minute.toString();
+    return this.sunSet.hour.toString() + ':' + this.sunSet.minute.toString();
   }
 
   String getDayTime() {
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch((this.sunSet - sunRise) * 1000);
-    return time.hour.toString() + 'h' + time.minute.toString() + 'm';
+    Duration time = this.sunSet.difference(this.sunRise);
+    return time.inHours.toString() +
+        'h' +
+        (time.inMinutes % time.inHours).toString() +
+        'm';
   }
 
   String getHumitidy() {
@@ -69,23 +62,20 @@ class Weather {
   }
 
   String getCurrentTime() {
-    DateTime time =
-        DateTime.fromMillisecondsSinceEpoch(this.currentTime * 1000);
-    String zeroMinute = time.minute < 10 ? '0' : '';
-    String zeroHour = time.hour < 10 ? '0' : '';
+    String zeroMinute = this.currentTime.minute < 10 ? '0' : '';
+    String zeroHour = this.currentTime.hour < 10 ? '0' : '';
 
     String currentTime =
-        '${DateFormat('EEEE').format(time)}, ${time.day} ${DateFormat('MMM').format(time)}. ${time.year} | $zeroHour${time.hour}:$zeroMinute${time.minute}';
+        '${DateFormat('EEE').format(this.currentTime)}, ${this.currentTime.day} ${DateFormat('MMM').format(this.currentTime)}. ${this.currentTime.year} | $zeroHour${this.currentTime.hour}:$zeroMinute${this.currentTime.minute}';
 
     return currentTime;
   }
 
   bool isDay() {
-    if (this.sunSet - this.currentTime < 0) return false;
+    if (this.currentTime.isAfter(this.sunRise) &&
+        this.currentTime.isBefore(this.sunSet)) return true;
 
-    if (this.sunRise - this.currentTime < 0) return true;
-
-    return true;
+    return false;
   }
 }
 

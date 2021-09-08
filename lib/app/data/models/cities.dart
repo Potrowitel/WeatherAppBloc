@@ -1,8 +1,8 @@
 class Cities {
   String country;
   String city;
-  String lat;
-  String lng;
+  double lat;
+  double lng;
 
   Cities(
       {required this.country,
@@ -13,10 +13,11 @@ class Cities {
   factory Cities.fromJson(var json) {
     //print(json);
     return Cities(
-        country: json['country'] as String,
-        city: json['name'] as String,
-        lat: json['lat'] as String,
-        lng: json['lng'] as String);
+      country: json['country'] as String,
+      city: json['name'] as String,
+      lat: json['lat'].toDouble(),
+      lng: json['lng'].toDouble(),
+    );
   }
 
   @override

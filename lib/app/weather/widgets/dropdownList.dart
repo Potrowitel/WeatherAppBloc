@@ -48,6 +48,9 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
           ),
         ),
         child: BlocBuilder<CitiesBloc, CitiesState>(builder: (context, state) {
+          if (state is CitiesLoading) {
+            return Center(child: CircularProgressIndicator());
+          }
           if (state is CitiesLoaded) {
             cities = state.cities;
             return Column(
