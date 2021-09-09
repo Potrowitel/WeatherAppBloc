@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../data/models/weather.dart';
-import 'weatherElem.dart';
 
 class EverydayWeather extends StatelessWidget {
   final DailyWeather dailyWeather;

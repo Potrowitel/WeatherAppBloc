@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:weather_app_bloc/app/weather/bloc/weather_bloc.dart';
-import '../../cities/bloc/cities_bloc.dart';
-import '../widgets/cityTile.dart';
-import '../../data/models/cities.dart';
-import '../../help/ThemeColors.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:weather_app_bloc/app/data/models/cities.dart';
+import 'package:weather_app_bloc/app/help/ThemeColors.dart';
+import 'package:weather_app_bloc/app/cities/bloc/cities_bloc_barrel.dart';
+import 'package:weather_app_bloc/app/weather/widgets/cityTile.dart';
+import 'package:weather_app_bloc/app/weather/bloc/weather_bloc_barrel.dart';
 
 class LocationDrowdownList extends StatefulWidget {
   final Cities city;
@@ -29,11 +25,14 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<CitiesBloc>(context).add(FetchCities(city: widget.city));
+    BlocProvider.of<CitiesBloc>(context)
+        .add(CitiesEvent.FetchCities(widget.city));
   }
 
   @override
   Widget build(BuildContext context) {
+    late Widget view;
+
     //print(MediaQuery.of(context).padding.top);
     final mediaHeight = MediaQuery.of(context).size.height;
     return Container(
@@ -48,12 +47,11 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
           ),
         ),
         child: BlocBuilder<CitiesBloc, CitiesState>(builder: (context, state) {
-          if (state is CitiesLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (state is CitiesLoaded) {
-            cities = state.cities;
-            return Column(
+          state.when(loading: () {
+            view = Center(child: CircularProgressIndicator());
+          }, loaded: (loadedCities) {
+            cities = loadedCities;
+            view = Column(
               children: [
                 SizedBox(height: 24),
                 Text(
@@ -61,16 +59,6 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
                   style: Theme.of(context).textTheme.headline1,
                 ),
                 Container(
-                  // decoration: BoxDecoration(
-                  //   boxShadow: [
-                  //     BoxShadow(
-                  //       spreadRadius: 50,
-                  //       color: Colors.black,
-                  //       blurRadius: 25,
-                  //       offset: const Offset(0, 10),
-                  //     ),
-                  //   ],
-                  // ),
                   height: 50,
                   margin: EdgeInsets.only(left: 30.0, top: 20.0, right: 30.0),
                   child: TextField(
@@ -78,7 +66,7 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
                       setState(() {
                         if (cities.isNotEmpty)
                           BlocProvider.of<CitiesBloc>(context)
-                              .add(FilterCities(quary: value, cities: cities));
+                              .add(CitiesEvent.FilterCities(value, cities));
                       });
                     },
                     controller: editingController,
@@ -132,14 +120,14 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
                           GestureDetector(
                             onTap: () {
                               BlocProvider.of<WeatherBloc>(widget.context)
-                                  .add(CityClicked(city: state.cities[index]));
+                                  .add(WeatherEvent.CityClicked(cities[index]));
                               Navigator.of(context).pop();
                             },
                             child: Container(
                               child: CityTile(
-                                state.cities[index].city,
-                                state.cities[index].country,
-                                widget.city.city == state.cities[index].city
+                                cities[index].city,
+                                cities[index].country,
+                                widget.city.city == cities[index].city
                                     ? true
                                     : false,
                               ),
@@ -152,8 +140,10 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
                 ),
               ],
             );
-          }
-          return Container();
+          }, error: (error) {
+            view = Container();
+          });
+          return view;
         }),
       ),
     );

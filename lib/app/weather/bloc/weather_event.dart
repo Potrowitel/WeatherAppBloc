@@ -1,41 +1,11 @@
-part of 'weather_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:weather_app_bloc/app/data/models/cities.dart';
 
-@immutable
-abstract class WeatherEvent {
-  const WeatherEvent();
+part 'weather_event.freezed.dart';
 
-  @override
-  List<Object> get props => [];
+@freezed
+abstract class WeatherEvent with _$WeatherEvent {
+  const factory WeatherEvent.FetchWeather(Cities cityLocation) =
+      FetchWeatherEvent;
+  const factory WeatherEvent.CityClicked(Cities city) = CityClickedEvent;
 }
-
-class AppStarted extends WeatherEvent {
-  @override
-  List<Object> get props => [];
-}
-
-class FetchWeather extends WeatherEvent {
-  final Cities cityLocation;
-
-  const FetchWeather(this.cityLocation);
-
-  @override
-  List<Object> get props => [cityLocation];
-}
-
-class CityClicked extends WeatherEvent {
-  final Cities city;
-  const CityClicked({required this.city});
-
-  @override
-  List<Object> get props => [city];
-}
-
-// class TimeStart extends WeatherEvent {
-//   final DateTime time;
-//   final int timeOffset;
-
-//   const TimeStart({required this.time, required this.timeOffset});
-
-//   @override
-//   List<Object> get props => [time, timeOffset];
-// }

@@ -1,29 +1,13 @@
-part of 'weather_bloc.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:weather_app_bloc/app/data/models/cities.dart';
+import 'package:weather_app_bloc/app/data/models/weather.dart';
 
-@immutable
-abstract class WeatherState {}
+part 'weather_state.freezed.dart';
 
-class WeatherInitial extends WeatherState {}
-
-class WeatherEmpty extends WeatherState {}
-
-class WeatherLoading extends WeatherState {}
-
-class WeatherLoaded extends WeatherState {
-  final Weather weather;
-  final Cities city;
-
-  WeatherLoaded({required this.weather, required this.city});
-}
-
-class WeatherError extends WeatherState {
-  final Object errorCode;
-  WeatherError({required this.errorCode});
-}
-
-class TimeStarted extends WeatherState {
-  final DateTime time;
-  final int timeOffset;
-
-  TimeStarted({required this.time, required this.timeOffset});
+@freezed
+abstract class WeatherState with _$WeatherState {
+  const factory WeatherState.loading() = _WeatherLoadingState;
+  const factory WeatherState.loaded(Weather weather, Cities city) =
+      _WeatherLoadedState;
+  const factory WeatherState.error(Object error) = _WeatherErrorState;
 }

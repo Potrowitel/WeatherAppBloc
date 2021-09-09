@@ -2,7 +2,7 @@ import '../data/models/cities.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'dart:async';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
 
 class CitiesFailure implements Exception {}
 

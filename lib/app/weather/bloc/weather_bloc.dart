@@ -1,50 +1,47 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:meta/meta.dart';
+import 'package:weather_app_bloc/app/weather/bloc/weather_event.dart';
+import 'package:weather_app_bloc/app/weather/bloc/weather_state.dart';
 
 import '../../data/models/cities.dart';
 import '../../data/models/weather.dart';
 import '../../data/weatherRepository.dart';
-
-part 'weather_event.dart';
-part 'weather_state.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
   final WeatherRepository _weatherRepository;
   Cities city = Cities(country: 'KG', city: 'Bishkek', lat: 42.87, lng: 74.59);
   WeatherBloc({required WeatherRepository weatherRepository})
       : _weatherRepository = weatherRepository,
-        super(WeatherLoading());
+        super(WeatherState.loading());
 
   @override
   Stream<WeatherState> mapEventToState(
     WeatherEvent event,
   ) async* {
-    if (event is FetchWeather) {
+    if (event is FetchWeatherEvent) {
       try {
-        yield WeatherLoading();
+        yield WeatherState.loading();
         final Weather weather = await _weatherRepository.fetchWeatherByLocation(
             event.cityLocation.lat, event.cityLocation.lng);
         //DateTime time = DateTime.now();
 
-        yield WeatherLoaded(weather: weather, city: city);
+        yield WeatherState.loaded(weather, city);
         //  yield TimeStarted(time: time, timeOffset: weather.offset);
       } catch (exception) {
         // print(exception);
-        yield WeatherError(errorCode: exception);
+        yield WeatherState.error(exception);
       }
     }
-    if (event is CityClicked) {
+    if (event is CityClickedEvent) {
       try {
-        yield WeatherLoading();
+        yield WeatherState.loading();
         final Weather weather = await _weatherRepository.fetchWeatherByLocation(
             event.city.lat, event.city.lng);
-        yield WeatherLoaded(weather: weather, city: event.city);
+        yield WeatherState.loaded(weather, event.city);
       } catch (exception) {
         print(exception);
-        yield WeatherError(errorCode: exception);
+        yield WeatherState.error(exception);
       }
     }
   }

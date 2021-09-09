@@ -14,17 +14,11 @@ class WeatherRepository {
         'https://api.openweathermap.org/data/2.5/onecall?lat=$latitude&lon=$longitud&units=metric&exclude=minutely,hourly,alerts&appid=$apiKey');
 
     final res = await http.get(url);
-    double windSpeed = 0;
+
     if (res.statusCode != 200) {
       print('error');
     }
     final weatherJson = json.decode(res.body);
-    //  print(weatherJson.toString());
-    if (weatherJson['current']['wind_speed'] is int) {
-      windSpeed = weatherJson['current']['wind_speed'].toDouble();
-    } else {
-      windSpeed = weatherJson['current']['wind_speed'];
-    }
 
     List<DailyWeather> dailyWeather = weatherJson['daily']
         .map<DailyWeather>((dailyJson) => DailyWeather.fromJson(dailyJson))
@@ -43,18 +37,16 @@ class WeatherRepository {
     sunSet = sunSet.add(Duration(seconds: dateOffset));
     DateTime currentTime = date.add(Duration(seconds: dateOffset));
 
-    print(DateTime.fromMillisecondsSinceEpoch(
-        weatherJson['current']['sunrise'] * 1000));
+    print(weatherJson);
 
     final Weather weather = Weather(
       cityName: weatherJson['timezone'] as String,
       temp: weatherJson['current']['temp'].round(),
-      condition: weatherJson['current']['weather'][0]['main'] as String,
       humidity: weatherJson['current']['humidity'] as int,
       pressure: weatherJson['current']['pressure'] as int,
       sunRise: sunRise,
       sunSet: sunSet,
-      windSpeed: windSpeed as double,
+      windSpeed: weatherJson['current']['wind_speed'].toDouble(),
       windDeg: weatherJson['current']['wind_deg'] as int,
       currentTime: currentTime,
       offset: weatherJson['timezone_offset'] as int,

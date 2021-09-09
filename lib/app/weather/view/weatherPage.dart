@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
-import 'package:weather_app_bloc/app/data/timerRepository.dart';
-import '../../cities/bloc/cities_bloc.dart';
-import '../../data/citiesRepository.dart';
-import '../../data/models/cities.dart';
-import '../bloc/weather_bloc.dart';
-import '../../data/models/weather.dart';
-import '../widgets/everydayWeather.dart';
-import '../widgets/weatherElem.dart';
-import '../widgets/dropdownList.dart';
-import '../../help/ThemeColors.dart';
+import 'package:weather_app_bloc/app/data/citiesRepository.dart';
+import 'package:weather_app_bloc/app/data/models/cities.dart';
+import 'package:weather_app_bloc/app/help/ThemeColors.dart';
+import 'package:weather_app_bloc/app/weather/bloc/weather_bloc_barrel.dart';
+import 'package:weather_app_bloc/app/cities/bloc/cities_bloc_barrel.dart';
+import 'package:weather_app_bloc/app/weather/widgets/dropdownList.dart';
+import 'package:weather_app_bloc/app/weather/widgets/everydayWeather.dart';
+import 'package:weather_app_bloc/app/weather/widgets/weatherElem.dart';
 
 class WeatherPage extends StatefulWidget {
   @override
@@ -21,7 +18,7 @@ class _WeatherPageState extends State<WeatherPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<WeatherBloc>(context).add(FetchWeather(
+    BlocProvider.of<WeatherBloc>(context).add(WeatherEvent.FetchWeather(
         Cities(country: 'KG', city: 'Bishkek', lat: 42.87, lng: 74.59)));
   }
 
@@ -29,11 +26,12 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget build(BuildContext ctx) {
     final mediaHeight = MediaQuery.of(context).size.height;
     final mediaWidth = MediaQuery.of(context).size.width;
+    late Widget view;
 
     return BlocBuilder<WeatherBloc, WeatherState>(
       builder: (ctx, state) {
-        if (state is WeatherLoading) {
-          return Scaffold(
+        state.when(loading: () {
+          view = Scaffold(
             body: Container(
               child: Stack(alignment: Alignment.topCenter, children: [
                 Container(),
@@ -55,17 +53,15 @@ class _WeatherPageState extends State<WeatherPage> {
               ]),
             ),
           );
-        }
-        if (state is WeatherLoaded) {
-          Weather weather = state.weather;
-          return Scaffold(
+        }, loaded: (weather, city) {
+          view = Scaffold(
             body: Container(
               child: Stack(
                 alignment: Alignment.topCenter,
                 children: [
                   Container(),
                   Container(
-                    child: state.weather.isDay()
+                    child: weather.isDay()
                         ? Image.asset('assets/images/graphic.png')
                         : Image.asset('assets/images/graphic_night.png'),
                   ),
@@ -89,7 +85,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                   child: Container(
                                     margin: EdgeInsets.all(10.0),
                                     child: Text(
-                                      state.weather.getCurrentTime(),
+                                      weather.getCurrentTime(),
                                       // 'Sunday, 19 May 2019| 4:30PM',
                                       style: Theme.of(context)
                                           .textTheme
@@ -120,13 +116,6 @@ class _WeatherPageState extends State<WeatherPage> {
                                         height: 48,
                                         child: GestureDetector(
                                           onTap: () {
-                                            TimerRepository t =
-                                                new TimerRepository();
-                                            print(t.getCurrentTime(
-                                                weather.offset));
-                                            //CitiesRepository city =
-                                            //    new CitiesRepository();
-                                            //List<Cities> cities = city.fetchCities();
                                             showModalBottomSheet(
                                               isScrollControlled: true,
                                               context: ctx,
@@ -136,7 +125,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                                       citiesRepository:
                                                           CitiesRepository()),
                                                   child: LocationDrowdownList(
-                                                      ctx, state.city),
+                                                      ctx, city),
                                                 );
                                               },
                                             );
@@ -149,9 +138,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                             margin: EdgeInsets.only(
                                                 top: 14.0, left: 10.0),
                                             child: Text(
-                                              state.city.city +
-                                                  ',' +
-                                                  state.city.country,
+                                              city.city + ',' + city.country,
                                               style: Theme.of(context)
                                                   .textTheme
                                                   .headline1
@@ -204,7 +191,8 @@ class _WeatherPageState extends State<WeatherPage> {
                                             width: 40,
                                           ),
                                           Text(
-                                            weather.condition,
+                                            weather
+                                                .dailyWeather[0].condition.main,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline1
@@ -354,11 +342,11 @@ class _WeatherPageState extends State<WeatherPage> {
                             width: mediaWidth - 35,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: state.weather.dailyWeather.length - 1,
+                              itemCount: weather.dailyWeather.length - 1,
                               itemBuilder: (context, index) {
                                 return EverydayWeather(
                                     dailyWeather:
-                                        state.weather.dailyWeather[index + 1]);
+                                        weather.dailyWeather[index + 1]);
                               },
                             ),
                           ),
@@ -370,9 +358,8 @@ class _WeatherPageState extends State<WeatherPage> {
               ),
             ),
           );
-        }
-        if (state is WeatherError) {
-          return Scaffold(
+        }, error: (error) {
+          view = Scaffold(
             body: Container(
               child: Stack(alignment: Alignment.topCenter, children: [
                 Container(),
@@ -384,7 +371,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   right: 0,
                   child: Container(
                     child: Center(
-                      child: Text('${state.errorCode}'),
+                      child: Text('$error'),
                     ),
                     height: mediaHeight / 3 * 2 - 15,
                     decoration: BoxDecoration(
@@ -396,8 +383,9 @@ class _WeatherPageState extends State<WeatherPage> {
               ]),
             ),
           );
-        }
-        return Container();
+        });
+
+        return view;
       },
     );
   }

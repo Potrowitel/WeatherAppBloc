@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 class Weather {
   final String cityName;
   final int temp;
-  final String condition;
   final int humidity;
   final int pressure;
   final double windSpeed;
@@ -17,7 +16,6 @@ class Weather {
   Weather({
     required this.cityName,
     required this.temp,
-    required this.condition,
     required this.humidity,
     required this.pressure,
     required this.windSpeed,
@@ -134,6 +132,7 @@ class Condition {
       required this.main,
       required this.description,
       this.icon = 'assets/images/sunny.png'}) {
+    print('${this.id}      ${this.main}');
     if (this.id == 800) {
       this.icon = 'assets/images/sunny.png';
     }
