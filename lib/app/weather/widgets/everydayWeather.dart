@@ -42,7 +42,7 @@ class EverydayWeather extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  '${dailyWeather.tempH} \u00B0C',
+                  '${dailyWeather.temp.tempH} \u00B0C',
                   style: Theme.of(context)
                       .textTheme
                       .headline1
@@ -55,7 +55,7 @@ class EverydayWeather extends StatelessWidget {
                 ),
                 SizedBox(width: 2.0),
                 Text(
-                  '${dailyWeather.tempL}\u00B0C',
+                  '${dailyWeather.temp.tempL}\u00B0C',
                   style: Theme.of(context)
                       .textTheme
                       .headline1

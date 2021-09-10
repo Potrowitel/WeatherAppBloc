@@ -3,8 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_bloc/app/data/models/cities.dart';
 import 'package:weather_app_bloc/app/help/ThemeColors.dart';
 import 'package:weather_app_bloc/app/cities/bloc/cities_bloc_barrel.dart';
-import 'package:weather_app_bloc/app/weather/widgets/cityTile.dart';
 import 'package:weather_app_bloc/app/weather/bloc/weather_bloc_barrel.dart';
+import 'package:weather_app_bloc/app/weather/widgets/cityTile.dart';
 
 class LocationDrowdownList extends StatefulWidget {
   final Cities city;
@@ -33,7 +33,6 @@ class _LocationDrowdownListState extends State<LocationDrowdownList> {
   Widget build(BuildContext context) {
     late Widget view;
 
-    //print(MediaQuery.of(context).padding.top);
     final mediaHeight = MediaQuery.of(context).size.height;
     return Container(
       height: mediaHeight - 100,

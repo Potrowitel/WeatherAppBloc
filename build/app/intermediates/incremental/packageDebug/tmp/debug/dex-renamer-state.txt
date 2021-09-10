@@ -1,4 +1,0 @@
-#Thu Sep 09 11:22:03 ALMT 2021
-base.0=C\:\\Users\\beksr\\Desktop\\WeatherAppBloc\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-renamed.0=classes.dex
-path.0=classes.dex

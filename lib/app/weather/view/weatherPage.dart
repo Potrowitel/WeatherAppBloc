@@ -18,8 +18,11 @@ class _WeatherPageState extends State<WeatherPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<WeatherBloc>(context).add(WeatherEvent.FetchWeather(
-        Cities(country: 'KG', city: 'Bishkek', lat: 42.87, lng: 74.59)));
+    BlocProvider.of<WeatherBloc>(context).add(WeatherEvent.FetchWeather(Cities(
+        country: 'KG',
+        city: 'Bishkek',
+        lat: 40.15 /*42.87*/,
+        lng: 20.6 /*74.59*/)));
   }
 
   @override
@@ -28,11 +31,11 @@ class _WeatherPageState extends State<WeatherPage> {
     final mediaWidth = MediaQuery.of(context).size.width;
     late Widget view;
 
-    return BlocBuilder<WeatherBloc, WeatherState>(
-      builder: (ctx, state) {
-        state.when(loading: () {
-          view = Scaffold(
-            body: Container(
+    return Scaffold(
+      body: BlocBuilder<WeatherBloc, WeatherState>(
+        builder: (ctx, state) {
+          state.when(loading: () {
+            view = Container(
               child: Stack(alignment: Alignment.topCenter, children: [
                 Container(),
                 Container(child: Image.asset('assets/images/graphic.png')),
@@ -51,11 +54,9 @@ class _WeatherPageState extends State<WeatherPage> {
                   ),
                 ),
               ]),
-            ),
-          );
-        }, loaded: (weather, city) {
-          view = Scaffold(
-            body: Container(
+            );
+          }, loaded: (weather, city) {
+            view = Container(
               child: Stack(
                 alignment: Alignment.topCenter,
                 children: [
@@ -186,13 +187,13 @@ class _WeatherPageState extends State<WeatherPage> {
                                       child: Column(
                                         children: [
                                           Image.asset(
-                                            weather
-                                                .dailyWeather[0].condition.icon,
+                                            weather.dailyWeather![0].condition
+                                                .icon,
                                             width: 40,
                                           ),
                                           Text(
-                                            weather
-                                                .dailyWeather[0].condition.main,
+                                            weather.dailyWeather![0].condition
+                                                .main,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .headline1
@@ -201,7 +202,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                         ],
                                       ),
                                     ),
-                                    Container(), ////////////////////
+                                    Container(), ///////////////////
                                     Container(
                                         padding: const EdgeInsets.only(
                                             top: 22.0, left: 35.0),
@@ -210,7 +211,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                             Row(
                                               children: [
                                                 Text(
-                                                  '${weather.dailyWeather[0].tempH}\u00B0C',
+                                                  '${weather.dailyWeather![0].getTempH()}\u00B0C',
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .headline1,
@@ -231,7 +232,7 @@ class _WeatherPageState extends State<WeatherPage> {
                                             Row(
                                               children: [
                                                 Text(
-                                                  '${weather.dailyWeather[0].tempL}\u00B0C',
+                                                  '${weather.dailyWeather![0].getTempL()}\u00B0C',
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .headline1,
@@ -342,11 +343,11 @@ class _WeatherPageState extends State<WeatherPage> {
                             width: mediaWidth - 35,
                             child: ListView.builder(
                               scrollDirection: Axis.horizontal,
-                              itemCount: weather.dailyWeather.length - 1,
+                              itemCount: weather.dailyWeather!.length - 1,
                               itemBuilder: (context, index) {
                                 return EverydayWeather(
                                     dailyWeather:
-                                        weather.dailyWeather[index + 1]);
+                                        weather.dailyWeather![index + 1]);
                               },
                             ),
                           ),
@@ -356,37 +357,37 @@ class _WeatherPageState extends State<WeatherPage> {
                   ),
                 ],
               ),
-            ),
-          );
-        }, error: (error) {
-          view = Scaffold(
-            body: Container(
-              child: Stack(alignment: Alignment.topCenter, children: [
-                Container(),
-                Container(child: Image.asset('assets/images/graphic.png')),
-                Positioned(
-                  top: 270,
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    child: Center(
-                      child: Text('$error'),
+            );
+          }, error: (error) {
+            view = Scaffold(
+              body: Container(
+                child: Stack(alignment: Alignment.topCenter, children: [
+                  Container(),
+                  Container(child: Image.asset('assets/images/graphic.png')),
+                  Positioned(
+                    top: 270,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      child: Center(
+                        child: Text('$error'),
+                      ),
+                      height: mediaHeight / 3 * 2 - 15,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20.0))),
                     ),
-                    height: mediaHeight / 3 * 2 - 15,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20.0))),
                   ),
-                ),
-              ]),
-            ),
-          );
-        });
+                ]),
+              ),
+            );
+          });
 
-        return view;
-      },
+          return view;
+        },
+      ),
     );
   }
 }

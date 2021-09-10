@@ -1,46 +1,104 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'weather.g.dart';
+
+@JsonSerializable()
 class Weather {
-  final String cityName;
-  final int temp;
+  final double temp;
+  @JsonKey(fromJson: _condition, name: 'weather')
+  final Condition condition;
   final int humidity;
   final int pressure;
+  @JsonKey(name: 'wind_speed')
   final double windSpeed;
-  final int windDeg;
-  final DateTime sunRise;
-  final DateTime sunSet;
+  final int sunrise;
+  final int sunset;
+  @JsonKey(fromJson: _currentDate, name: 'dt')
   final DateTime currentTime;
-  final int offset;
-  final List<DailyWeather> dailyWeather;
+  @JsonKey(name: 'timezone_offset', ignore: true)
+  int? offset;
+  @JsonKey(fromJson: dailyWeatherJson, name: 'daily', ignore: true)
+  List<DailyWeather>? dailyWeather;
 
-  Weather({
-    required this.cityName,
-    required this.temp,
-    required this.humidity,
-    required this.pressure,
-    required this.windSpeed,
-    required this.windDeg,
-    required this.sunRise,
-    required this.sunSet,
-    required this.currentTime,
-    required this.offset,
-    required this.dailyWeather,
-  });
+  Weather(
+    this.temp,
+    this.condition,
+    this.humidity,
+    this.pressure,
+    this.windSpeed,
+    this.sunrise,
+    this.sunset,
+    this.currentTime, [
+    this.offset,
+    this.dailyWeather,
+  ]);
+
+  Weather copyWith({
+    double? temp,
+    Condition? condition,
+    int? humidity,
+    int? pressure,
+    double? windSpeed,
+    int? sunrise,
+    int? sunset,
+    DateTime? currentTime,
+    int? offset,
+    List<DailyWeather>? dailyWeather,
+  }) {
+    return Weather(
+      temp ?? this.temp,
+      condition ?? this.condition,
+      humidity ?? this.humidity,
+      pressure ?? this.pressure,
+      windSpeed ?? this.windSpeed,
+      sunrise ?? this.sunrise,
+      sunset ?? this.sunset,
+      currentTime ?? this.currentTime,
+      offset ?? this.offset,
+      dailyWeather ?? this.dailyWeather,
+    );
+  }
+
+  static _condition(json) {
+    return Condition.fromJson(json[0]);
+  }
+
+  static List<DailyWeather> dailyWeatherJson(json) {
+    return (json as List<dynamic>)
+        .map<DailyWeather>((dailyJson) =>
+            DailyWeather.fromJson(dailyJson as Map<String, dynamic>))
+        .toList();
+  }
+
+  factory Weather.fromJson(Map<String, dynamic> json) =>
+      _$WeatherFromJson(json);
+  Map<String, dynamic> toJson() => _$WeatherToJson(this);
 
   String getTemp() {
-    return this.temp.toString();
+    return this.temp.toInt().toString();
+  }
+
+  static DateTime _currentDate(json) {
+    return DateTime.now().toUtc();
   }
 
   String getSunrise() {
-    return this.sunRise.hour.toString() + ':' + this.sunRise.minute.toString();
+    DateTime sunRise = _sunRiseFun();
+
+    sunRise = sunRise.add(Duration(seconds: this.offset!));
+    return sunRise.hour.toString() + ':' + sunRise.minute.toString();
   }
 
   String getSunset() {
-    return this.sunSet.hour.toString() + ':' + this.sunSet.minute.toString();
+    DateTime sunSet = _sunSetFun();
+    sunSet = sunSet.add(Duration(seconds: this.offset!));
+    return sunSet.hour.toString() + ':' + sunSet.minute.toString();
   }
 
   String getDayTime() {
-    Duration time = this.sunSet.difference(this.sunRise);
+    Duration time = _sunSetFun().difference(_sunRiseFun());
     return time.inHours.toString() +
         'h' +
         (time.inMinutes % time.inHours).toString() +
@@ -70,36 +128,60 @@ class Weather {
   }
 
   bool isDay() {
-    if (this.currentTime.isAfter(this.sunRise) &&
-        this.currentTime.isBefore(this.sunSet)) return true;
+    if (this.currentTime.isAfter(_sunRiseFun()) &&
+        this.currentTime.isBefore(_sunSetFun())) return true;
 
     return false;
   }
+
+  DateTime _sunRiseFun() {
+    return DateTime.fromMillisecondsSinceEpoch(this.sunrise * 1000,
+        isUtc: true);
+  }
+
+  DateTime _sunSetFun() {
+    return DateTime.fromMillisecondsSinceEpoch(this.sunset * 1000, isUtc: true);
+  }
 }
 
+@JsonSerializable()
+class Temp {
+  @JsonKey(name: 'max')
+  final double tempH;
+  @JsonKey(name: 'min')
+  final double tempL;
+
+  Temp({
+    required this.tempH,
+    required this.tempL,
+  });
+
+  factory Temp.fromJson(Map<String, dynamic> json) => _$TempFromJson(json);
+  Map<String, dynamic> toJson() => _$TempToJson(this);
+}
+
+@JsonSerializable()
 class DailyWeather {
+  @JsonKey(name: 'dt')
   final int time;
-  final int tempH;
-  final int tempL;
+  @JsonKey(fromJson: _temp, name: 'temp')
+  final Temp temp;
+  @JsonKey(fromJson: _condition, name: 'weather')
   final Condition condition;
 
   DailyWeather(
-      {required this.time,
-      required this.tempH,
-      required this.tempL,
-      required this.condition});
+      {required this.time, required this.temp, required this.condition});
 
-  factory DailyWeather.fromJson(var json) {
-    return DailyWeather(
-      time: json['dt'] as int,
-      tempH: json['temp']['max'].toInt(),
-      tempL: json['temp']['min'].toInt(),
-      condition: Condition(
-        id: json['weather'][0]['id'].toInt(),
-        main: json['weather'][0]['main'],
-        description: json['weather'][0]['description'],
-      ),
-    );
+  factory DailyWeather.fromJson(Map<String, dynamic> json) =>
+      _$DailyWeatherFromJson(json);
+  Map<String, dynamic> toJson() => _$DailyWeatherToJson(this);
+
+  static _condition(json) {
+    return Condition.fromJson(json[0]);
+  }
+
+  static Temp _temp(Map<String, dynamic> json) {
+    return Temp.fromJson(json);
   }
 
   String getDayName() {
@@ -113,14 +195,15 @@ class DailyWeather {
   }
 
   int getTempH() {
-    return this.tempH;
+    return this.temp.tempH.toInt();
   }
 
   int getTempL() {
-    return this.tempL;
+    return this.temp.tempL.toInt();
   }
 }
 
+@JsonSerializable()
 class Condition {
   final int id;
   final String main;
@@ -132,7 +215,6 @@ class Condition {
       required this.main,
       required this.description,
       this.icon = 'assets/images/sunny.png'}) {
-    print('${this.id}      ${this.main}');
     if (this.id == 800) {
       this.icon = 'assets/images/sunny.png';
     }
@@ -143,4 +225,7 @@ class Condition {
       this.icon = 'assets/images/_hazy.png';
     }
   }
+  factory Condition.fromJson(Map<String, dynamic> json) =>
+      _$ConditionFromJson(json);
+  Map<String, dynamic> toJson() => _$ConditionToJson(this);
 }

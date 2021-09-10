@@ -10,12 +10,9 @@ class CitiesRepository {
   Future<List<Cities>> fetchCitiesFromJson() async {
     var citiesObjsJson =
         jsonDecode(await rootBundle.loadString('assets/json/cities.json'));
-
     List<Cities> cities = citiesObjsJson
         .map((citiesJson) => Cities.fromJson(citiesJson))
         .toList();
-
-    //print(cities);
     return cities;
   }
 
