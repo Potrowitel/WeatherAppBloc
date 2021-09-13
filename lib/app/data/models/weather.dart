@@ -5,6 +5,84 @@ import 'package:json_annotation/json_annotation.dart';
 part 'weather.g.dart';
 
 @JsonSerializable()
+class WeatherLocation {
+  final double lat;
+  final double lon;
+  final String timezone;
+  @JsonKey(name: 'timezone_offset')
+  final int timeOffset;
+  final Weather current;
+  final List<DailyWeather> daily;
+
+  WeatherLocation({
+    required this.lat,
+    required this.lon,
+    required this.timezone,
+    required this.timeOffset,
+    required this.current,
+    required this.daily,
+  });
+
+  factory WeatherLocation.fromJson(Map<String, dynamic> json) =>
+      _$WeatherLocationFromJson(json);
+  Map<String, dynamic> toJson() => _$WeatherLocationToJson(this);
+
+  String getDayTime() {
+    Duration time = _sunSetFun().difference(_sunRiseFun());
+    return time.inHours.toString() +
+        'h' +
+        (time.inMinutes % time.inHours).toString() +
+        'm';
+  }
+
+  String getCurrentTime() {
+    DateTime current = this.current.currentTime;
+    current = current.add(Duration(seconds: this.timeOffset));
+    print(this.timeOffset);
+    print(current);
+    String zeroMinute = current.minute < 10 ? '0' : '';
+    String zeroHour = current.hour < 10 ? '0' : '';
+
+    String currentTime =
+        '${DateFormat('EEE').format(current)}, ${current.day} ${DateFormat('MMM').format(current)}. ${current.year} | $zeroHour${current.hour}:$zeroMinute${current.minute}';
+
+    return currentTime;
+  }
+
+  bool isDay() {
+    DateTime current = this.current.currentTime;
+    current = current.add(Duration(seconds: this.timeOffset));
+    if (current.isAfter(_sunRiseFun()) && current.isBefore(_sunSetFun()))
+      return true;
+
+    return false;
+  }
+
+  String getSunrise() {
+    DateTime sunRise = _sunRiseFun();
+
+    sunRise = sunRise.add(Duration(seconds: this.timeOffset));
+    return sunRise.hour.toString() + ':' + sunRise.minute.toString();
+  }
+
+  String getSunset() {
+    DateTime sunSet = _sunSetFun();
+    sunSet = sunSet.add(Duration(seconds: this.timeOffset));
+    return sunSet.hour.toString() + ':' + sunSet.minute.toString();
+  }
+
+  DateTime _sunRiseFun() {
+    return DateTime.fromMillisecondsSinceEpoch(this.current.sunrise * 1000,
+        isUtc: true);
+  }
+
+  DateTime _sunSetFun() {
+    return DateTime.fromMillisecondsSinceEpoch(this.current.sunset * 1000,
+        isUtc: true);
+  }
+}
+
+@JsonSerializable()
 class Weather {
   final double temp;
   @JsonKey(fromJson: _condition, name: 'weather')
@@ -17,49 +95,17 @@ class Weather {
   final int sunset;
   @JsonKey(fromJson: _currentDate, name: 'dt')
   final DateTime currentTime;
-  @JsonKey(name: 'timezone_offset', ignore: true)
-  int? offset;
-  @JsonKey(fromJson: dailyWeatherJson, name: 'daily', ignore: true)
-  List<DailyWeather>? dailyWeather;
 
-  Weather(
-    this.temp,
-    this.condition,
-    this.humidity,
-    this.pressure,
-    this.windSpeed,
-    this.sunrise,
-    this.sunset,
-    this.currentTime, [
-    this.offset,
-    this.dailyWeather,
-  ]);
-
-  Weather copyWith({
-    double? temp,
-    Condition? condition,
-    int? humidity,
-    int? pressure,
-    double? windSpeed,
-    int? sunrise,
-    int? sunset,
-    DateTime? currentTime,
-    int? offset,
-    List<DailyWeather>? dailyWeather,
-  }) {
-    return Weather(
-      temp ?? this.temp,
-      condition ?? this.condition,
-      humidity ?? this.humidity,
-      pressure ?? this.pressure,
-      windSpeed ?? this.windSpeed,
-      sunrise ?? this.sunrise,
-      sunset ?? this.sunset,
-      currentTime ?? this.currentTime,
-      offset ?? this.offset,
-      dailyWeather ?? this.dailyWeather,
-    );
-  }
+  Weather({
+    required this.temp,
+    required this.condition,
+    required this.humidity,
+    required this.pressure,
+    required this.windSpeed,
+    required this.sunrise,
+    required this.sunset,
+    required this.currentTime,
+  });
 
   static _condition(json) {
     return Condition.fromJson(json[0]);
@@ -84,27 +130,6 @@ class Weather {
     return DateTime.now().toUtc();
   }
 
-  String getSunrise() {
-    DateTime sunRise = _sunRiseFun();
-
-    sunRise = sunRise.add(Duration(seconds: this.offset!));
-    return sunRise.hour.toString() + ':' + sunRise.minute.toString();
-  }
-
-  String getSunset() {
-    DateTime sunSet = _sunSetFun();
-    sunSet = sunSet.add(Duration(seconds: this.offset!));
-    return sunSet.hour.toString() + ':' + sunSet.minute.toString();
-  }
-
-  String getDayTime() {
-    Duration time = _sunSetFun().difference(_sunRiseFun());
-    return time.inHours.toString() +
-        'h' +
-        (time.inMinutes % time.inHours).toString() +
-        'm';
-  }
-
   String getHumitidy() {
     return this.humidity.toString() + '%';
   }
@@ -115,32 +140,6 @@ class Weather {
 
   String getWindSpeed() {
     return this.windSpeed.toString() + 'km/h';
-  }
-
-  String getCurrentTime() {
-    String zeroMinute = this.currentTime.minute < 10 ? '0' : '';
-    String zeroHour = this.currentTime.hour < 10 ? '0' : '';
-
-    String currentTime =
-        '${DateFormat('EEE').format(this.currentTime)}, ${this.currentTime.day} ${DateFormat('MMM').format(this.currentTime)}. ${this.currentTime.year} | $zeroHour${this.currentTime.hour}:$zeroMinute${this.currentTime.minute}';
-
-    return currentTime;
-  }
-
-  bool isDay() {
-    if (this.currentTime.isAfter(_sunRiseFun()) &&
-        this.currentTime.isBefore(_sunSetFun())) return true;
-
-    return false;
-  }
-
-  DateTime _sunRiseFun() {
-    return DateTime.fromMillisecondsSinceEpoch(this.sunrise * 1000,
-        isUtc: true);
-  }
-
-  DateTime _sunSetFun() {
-    return DateTime.fromMillisecondsSinceEpoch(this.sunset * 1000, isUtc: true);
   }
 }
 

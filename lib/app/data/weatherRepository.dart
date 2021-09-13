@@ -1,29 +1,30 @@
-import 'dart:convert';
+import 'package:weather_app_bloc/app/data/restApi.dart';
 
 import 'models/weather.dart';
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
 
 class WeatherFailure implements Exception {}
 
 class WeatherRepository {
   static String apiKey = '6dc9b1311d72eed48c72de34bba59772';
 
-  Future<Weather> fetchWeatherByLocation(
-      double latitude, double longitud) async {
-    final url =
-        'https://api.openweathermap.org/data/2.5/onecall?lat=$latitude&lon=$longitud&units=metric&exclude=minutely,hourly,alerts&appid=$apiKey';
+  Future<WeatherLocation> fetchWeatherByLocation(double lat, double lon) async {
+    final dio = Dio();
+    final client = RestClient(dio);
+    final weatherLocation = client.getWeather(lat, lon);
+    return weatherLocation;
+    // final url =
+    //     'https://api.openweathermap.org/data/2.5/onecall?lat=$latitude&lon=$longitud&units=metric&exclude=minutely,hourly,alerts&appid=$apiKey';
 
-    final res = await Dio().get(url);
+    // final res = await Dio().get(url);
 
-    if (res.statusCode != 200) {
-      print('error');
-    }
-    final weatherJson = res.data;
+    // if (res.statusCode != 200) {
+    //   print('error');
+    // }
+    // final weatherJson = res.data;
 
-    final Weather weather = Weather.fromJson(weatherJson['current']).copyWith(
-        offset: weatherJson['timezone_offset'],
-        dailyWeather: Weather.dailyWeatherJson(weatherJson['daily']));
+    // final WeatherLocation weatherLocation =
+    //     WeatherLocation.fromJson(weatherJson);
 
     // final Weather weather = Weather(
     //   temp: weatherJson['current']['temp'].round(),
@@ -37,6 +38,5 @@ class WeatherRepository {
     //   offset: weatherJson['timezone_offset'] as int,
     //   dailyWeather: dailyWeather,
     // );
-    return weather;
   }
 }

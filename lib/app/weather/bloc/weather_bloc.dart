@@ -22,8 +22,9 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     if (event is FetchWeatherEvent) {
       try {
         yield WeatherState.loading();
-        final Weather weather = await _weatherRepository.fetchWeatherByLocation(
-            event.cityLocation.lat, event.cityLocation.lng);
+        final WeatherLocation weather =
+            await _weatherRepository.fetchWeatherByLocation(
+                event.cityLocation.lat, event.cityLocation.lng);
         //DateTime time = DateTime.now();
 
         yield WeatherState.loaded(weather, city);
@@ -36,8 +37,8 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
     if (event is CityClickedEvent) {
       try {
         yield WeatherState.loading();
-        final Weather weather = await _weatherRepository.fetchWeatherByLocation(
-            event.city.lat, event.city.lng);
+        final WeatherLocation weather = await _weatherRepository
+            .fetchWeatherByLocation(event.city.lat, event.city.lng);
         yield WeatherState.loaded(weather, event.city);
       } catch (exception) {
         print(exception);

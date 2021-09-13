@@ -20,7 +20,7 @@ class _$WeatherStateTearOff {
     return const _WeatherLoadingState();
   }
 
-  _WeatherLoadedState loaded(Weather weather, Cities city) {
+  _WeatherLoadedState loaded(WeatherLocation weather, Cities city) {
     return _WeatherLoadedState(
       weather,
       city,
@@ -42,14 +42,14 @@ mixin _$WeatherState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loading,
-    required TResult Function(Weather weather, Cities city) loaded,
+    required TResult Function(WeatherLocation weather, Cities city) loaded,
     required TResult Function(Object error) error,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loading,
-    TResult Function(Weather weather, Cities city)? loaded,
+    TResult Function(WeatherLocation weather, Cities city)? loaded,
     TResult Function(Object error)? error,
     required TResult orElse(),
   }) =>
@@ -128,7 +128,7 @@ class _$_WeatherLoadingState implements _WeatherLoadingState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loading,
-    required TResult Function(Weather weather, Cities city) loaded,
+    required TResult Function(WeatherLocation weather, Cities city) loaded,
     required TResult Function(Object error) error,
   }) {
     return loading();
@@ -138,7 +138,7 @@ class _$_WeatherLoadingState implements _WeatherLoadingState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loading,
-    TResult Function(Weather weather, Cities city)? loaded,
+    TResult Function(WeatherLocation weather, Cities city)? loaded,
     TResult Function(Object error)? error,
     required TResult orElse(),
   }) {
@@ -182,7 +182,7 @@ abstract class _$WeatherLoadedStateCopyWith<$Res> {
   factory _$WeatherLoadedStateCopyWith(
           _WeatherLoadedState value, $Res Function(_WeatherLoadedState) then) =
       __$WeatherLoadedStateCopyWithImpl<$Res>;
-  $Res call({Weather weather, Cities city});
+  $Res call({WeatherLocation weather, Cities city});
 }
 
 /// @nodoc
@@ -205,7 +205,7 @@ class __$WeatherLoadedStateCopyWithImpl<$Res>
       weather == freezed
           ? _value.weather
           : weather // ignore: cast_nullable_to_non_nullable
-              as Weather,
+              as WeatherLocation,
       city == freezed
           ? _value.city
           : city // ignore: cast_nullable_to_non_nullable
@@ -220,7 +220,7 @@ class _$_WeatherLoadedState implements _WeatherLoadedState {
   const _$_WeatherLoadedState(this.weather, this.city);
 
   @override
-  final Weather weather;
+  final WeatherLocation weather;
   @override
   final Cities city;
 
@@ -255,7 +255,7 @@ class _$_WeatherLoadedState implements _WeatherLoadedState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loading,
-    required TResult Function(Weather weather, Cities city) loaded,
+    required TResult Function(WeatherLocation weather, Cities city) loaded,
     required TResult Function(Object error) error,
   }) {
     return loaded(weather, city);
@@ -265,7 +265,7 @@ class _$_WeatherLoadedState implements _WeatherLoadedState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loading,
-    TResult Function(Weather weather, Cities city)? loaded,
+    TResult Function(WeatherLocation weather, Cities city)? loaded,
     TResult Function(Object error)? error,
     required TResult orElse(),
   }) {
@@ -301,10 +301,10 @@ class _$_WeatherLoadedState implements _WeatherLoadedState {
 }
 
 abstract class _WeatherLoadedState implements WeatherState {
-  const factory _WeatherLoadedState(Weather weather, Cities city) =
+  const factory _WeatherLoadedState(WeatherLocation weather, Cities city) =
       _$_WeatherLoadedState;
 
-  Weather get weather => throw _privateConstructorUsedError;
+  WeatherLocation get weather => throw _privateConstructorUsedError;
   Cities get city => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   _$WeatherLoadedStateCopyWith<_WeatherLoadedState> get copyWith =>
@@ -377,7 +377,7 @@ class _$_WeatherErrorState implements _WeatherErrorState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() loading,
-    required TResult Function(Weather weather, Cities city) loaded,
+    required TResult Function(WeatherLocation weather, Cities city) loaded,
     required TResult Function(Object error) error,
   }) {
     return error(this.error);
@@ -387,7 +387,7 @@ class _$_WeatherErrorState implements _WeatherErrorState {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? loading,
-    TResult Function(Weather weather, Cities city)? loaded,
+    TResult Function(WeatherLocation weather, Cities city)? loaded,
     TResult Function(Object error)? error,
     required TResult orElse(),
   }) {

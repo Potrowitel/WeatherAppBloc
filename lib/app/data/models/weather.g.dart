@@ -6,16 +6,39 @@ part of 'weather.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+WeatherLocation _$WeatherLocationFromJson(Map<String, dynamic> json) {
+  return WeatherLocation(
+    lat: (json['lat'] as num).toDouble(),
+    lon: (json['lon'] as num).toDouble(),
+    timezone: json['timezone'] as String,
+    timeOffset: json['timezone_offset'] as int,
+    current: Weather.fromJson(json['current'] as Map<String, dynamic>),
+    daily: (json['daily'] as List<dynamic>)
+        .map((e) => DailyWeather.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$WeatherLocationToJson(WeatherLocation instance) =>
+    <String, dynamic>{
+      'lat': instance.lat,
+      'lon': instance.lon,
+      'timezone': instance.timezone,
+      'timezone_offset': instance.timeOffset,
+      'current': instance.current,
+      'daily': instance.daily,
+    };
+
 Weather _$WeatherFromJson(Map<String, dynamic> json) {
   return Weather(
-    (json['temp'] as num).toDouble(),
-    Weather._condition(json['weather']),
-    json['humidity'] as int,
-    json['pressure'] as int,
-    (json['wind_speed'] as num).toDouble(),
-    json['sunrise'] as int,
-    json['sunset'] as int,
-    Weather._currentDate(json['dt']),
+    temp: (json['temp'] as num).toDouble(),
+    condition: Weather._condition(json['weather']),
+    humidity: json['humidity'] as int,
+    pressure: json['pressure'] as int,
+    windSpeed: (json['wind_speed'] as num).toDouble(),
+    sunrise: json['sunrise'] as int,
+    sunset: json['sunset'] as int,
+    currentTime: Weather._currentDate(json['dt']),
   );
 }
 

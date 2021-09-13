@@ -7,7 +7,7 @@ part 'weather_state.freezed.dart';
 @freezed
 abstract class WeatherState with _$WeatherState {
   const factory WeatherState.loading() = _WeatherLoadingState;
-  const factory WeatherState.loaded(Weather weather, Cities city) =
+  const factory WeatherState.loaded(WeatherLocation weather, Cities city) =
       _WeatherLoadedState;
   const factory WeatherState.error(Object error) = _WeatherErrorState;
 }
