@@ -3,11 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_bloc/app/data/citiesRepository.dart';
 import 'package:weather_app_bloc/app/data/models/cities.dart';
 import 'package:weather_app_bloc/app/data/models/weather.dart';
+import 'package:weather_app_bloc/app/data/tick.dart';
 import 'package:weather_app_bloc/app/help/ThemeColors.dart';
 import 'package:weather_app_bloc/app/cities/bloc/cities_bloc_barrel.dart';
+import 'package:weather_app_bloc/app/time/bloc/time_bloc.dart';
+import 'package:weather_app_bloc/app/time/bloc/time_bloc_barrel.dart';
 import 'package:weather_app_bloc/app/weather/widgets/dropdownList.dart';
 import 'package:weather_app_bloc/app/weather/widgets/everydayWeather.dart';
 import 'package:weather_app_bloc/app/weather/widgets/weatherElem.dart';
+import 'package:weather_app_bloc/app/time/widget/time.dart';
 
 class WeatherInfo extends StatelessWidget {
   const WeatherInfo({
@@ -31,19 +35,24 @@ class WeatherInfo extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 child: Container(
-                  margin: EdgeInsets.all(10.0),
-                  child: Text(
-                    weather.getCurrentTime(),
-                    // 'Sunday, 19 May 2019| 4:30PM',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline2
-                        ?.copyWith(fontSize: 14.0),
-                  ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(20.0),
                     ),
+                  ),
+                  margin: EdgeInsets.all(10.0),
+                  child: BlocProvider<TimeBloc>(
+                    create: (context) => TimeBloc(tick: Tick()),
+                    child: DateTimer(weather: weather),
+                    // child: Text(
+                    //   // DateTimer()
+                    //   weather.getCurrentTime(),
+                    //   // 'Sunday, 19 May 2019| 4:30PM',
+                    //   style: Theme.of(context)
+                    //       .textTheme
+                    //       .headline2
+                    //       ?.copyWith(fontSize: 14.0),
+                    // ),
                   ),
                 ),
               ),

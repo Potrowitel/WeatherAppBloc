@@ -35,9 +35,9 @@ class WeatherLocation {
         'm';
   }
 
-  String getCurrentTime() {
+  String getCurrentTime(int time) {
     DateTime current = this.current.currentTime;
-    current = current.add(Duration(seconds: this.timeOffset));
+    current = current.add(Duration(seconds: this.timeOffset, minutes: time));
     print(this.timeOffset);
     print(current);
     String zeroMinute = current.minute < 10 ? '0' : '';

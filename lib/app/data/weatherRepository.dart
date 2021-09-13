@@ -1,4 +1,5 @@
 import 'package:weather_app_bloc/app/data/restApi.dart';
+import 'package:weather_app_bloc/app/data/tick.dart';
 
 import 'models/weather.dart';
 import 'package:dio/dio.dart';
@@ -11,8 +12,11 @@ class WeatherRepository {
   Future<WeatherLocation> fetchWeatherByLocation(double lat, double lon) async {
     final dio = Dio();
     final client = RestClient(dio);
-    final weatherLocation = client.getWeather(lat, lon);
+    final weatherLocation = await client.getWeather(lat, lon);
+    // final time = new TimeRepository()
+    //     .getCurrentTime(weatherLocation.current.currentTime);
     return weatherLocation;
+
     // final url =
     //     'https://api.openweathermap.org/data/2.5/onecall?lat=$latitude&lon=$longitud&units=metric&exclude=minutely,hourly,alerts&appid=$apiKey';
 

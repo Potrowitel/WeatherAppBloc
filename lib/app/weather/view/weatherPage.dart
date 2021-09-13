@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:weather_app_bloc/app/data/models/cities.dart';
+import 'package:weather_app_bloc/app/time/bloc/time_bloc.dart';
 import 'package:weather_app_bloc/app/weather/bloc/weather_bloc_barrel.dart';
 import 'package:weather_app_bloc/app/weather/widgets/picture.dart';
 import 'package:weather_app_bloc/app/weather/widgets/weatherInfo.dart';
